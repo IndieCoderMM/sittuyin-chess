@@ -1,19 +1,17 @@
 from board import Board
-from utils import generateFen, WINWIDTH, FPS
+from utils import GetBoardSetup
+from gui import GUI
+from engine import Royar
 
 import pygame
-import os
+
 
 def main():
-    os.environ['SDL_VIDEO_CENTERED'] = '1'
-    pygame.init()
-    pygame.display.init()
-    win = pygame.display.set_mode((WINWIDTH, WINWIDTH))
-    clock = pygame.time.Clock()
-    pygame.display.set_caption("STY")
-
-    start_fen = generateFen(rand=True)
-    board = Board(win, start_fen)
+    starting_fen = GetBoardSetup(rand=True)
+    chessboard = Board(starting_fen)
+    gui = GUI(chessboard)
+    player = 1
+    engine = Royar(not player)
 
     running = True
     while running:
@@ -23,17 +21,15 @@ def main():
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_r:
                     # Refresh the game
-                    start_fen = generateFen(rand=True)
-                    board = Board(win, start_fen)
+                    starting_fen = GetBoardSetup(rand=True)
+                    chessboard = Board(starting_fen)
             if event.type == pygame.MOUSEBUTTONUP:
-                x, y = event.pos
-                tile = board.GetSelectedSquare(x, y)
-                if tile is not None:
-                    board.MovePiece(tile)
+                if chessboard.turn == player:
+                    tile = gui.GetSelectedSquare(event.pos)
+                    if tile is not None:
+                        chessboard.MovePieceTo(tile)
 
-        board.UpdateDisplay()
-        pygame.display.update()
-        clock.tick(FPS)
+        gui.UpdateDisplay()
 
     pygame.quit()
 

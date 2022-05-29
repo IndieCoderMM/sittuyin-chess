@@ -1,10 +1,14 @@
-from utils import COLORS, SQSIZE, PIECES_IMG, MARGIN
+from utils import MARGIN, TILESIZE
 
-import pygame
 import chess
 
 class Tile:
-    SIZE = SQSIZE
+    SIZE = TILESIZE
+    NORMAL = 0
+    CAPTURABLE = 1
+    SELECTED = 3
+    MOVABLE = 4
+    CHECKED = 5
 
     def __init__(self, rank, file):
         self.rank = rank
@@ -14,19 +18,5 @@ class Tile:
         self.rect = (self.x + 2, self.y + 2, self.SIZE-3, self.SIZE-3)
         self.square = chess.square(file, rank)
         self.name = chess.SQUARE_NAMES[self.square]
-        self.highlighted = False
-        self.selected = False
+        self.state = self.NORMAL
 
-    def drawSquare(self, win, checked=False):
-        if self.highlighted:
-            pygame.draw.rect(win, COLORS['y'], self.rect, 3)
-        # TODO Selected tile should be highlighted
-        elif self.selected:
-            pygame.draw.rect(win, COLORS['g'], self.rect, 3)
-        if checked:
-            pygame.draw.rect(win, COLORS['r'], self.rect)
-        # else:
-        #     pygame.draw.rect(win, COLORS['r'], self.rect)
-
-    def drawPiece(self, piece, win):
-        win.blit(PIECES_IMG[piece.symbol()], (self.x, self.y))
