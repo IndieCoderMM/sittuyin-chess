@@ -1,5 +1,15 @@
 import pygame
 import random
+import enum
+
+class PieceValue(enum.Enum):
+    PAWN = 1
+    KNIGHT = 5
+    ELEPHANT = 4
+    GENERAL = 3
+    ROOK = 8
+    KING = 1000
+
 
 WINWIDTH = 600
 BOARDWIDTH = 500
@@ -74,3 +84,5 @@ def GetBoardSetup(white=DECK['kHide'], black=DECK['nCross'], rand=False):
     black = black[::-1].lower()
     fen = black + '/' + white
     return fen + ' w - - 0 1'
+
+

@@ -1,22 +1,22 @@
-from tile import Tile
-from utils import BOARDWIDTH, MARGIN
+from .tile import Tile
+from .utils import BOARDWIDTH, MARGIN
 
 import chess
-import random
+
 
 class Board(chess.Board):
     SIZE = BOARDWIDTH
 
     def __init__(self, *args):
         super().__init__(*args)
-        self.rect = (MARGIN - 1, MARGIN - 1, self.SIZE + 5, self.SIZE + 5)
+        self.rect = (MARGIN - 3, MARGIN - 3, self.SIZE + 4, self.SIZE + 4)
         self.squares = []
         self.moving = False
         self.selected_tile = None
         self.pending_move = []
-        self._makeTiles()
+        self._create_tiles()
 
-    def _makeTiles(self):
+    def _create_tiles(self):
         for file in range(8):
             for rank in range(8):
                 tile = Tile(rank, file)
@@ -45,11 +45,7 @@ class Board(chess.Board):
         """
         return [str(move) for move in self.legal_moves]
 
-    def MoveReady(self, tile):
-        """
-        :param tile: User selected Tile object
-        :return: Whether a move can be made from selected tiles
-        """
+    def prepare_move(self, tile):
         if not self.moving:
             piece = self.piece_at(tile.square)
             if piece is None or piece.color != self.turn:
@@ -60,29 +56,28 @@ class Board(chess.Board):
         else:
             self.moving = False
         self.pending_move.append(tile.name)
+
+    def ready_to_move(self):
         return len(self.pending_move) == 2
 
     def MovePieceTo(self, tile):
         """
         Make a move on board if it is legal
         """
-        if not self.MoveReady(tile):
+        self.prepare_move(tile)
+        if not self.ready_to_move():
             return
 
         move = ''.join(self.pending_move)
         if move in self.GetLegalMoves():
             self.push(self.parse_uci(move))
             print("Moving...", move)
-            ai_move = GetEngineMove(self.GetLegalMoves())
-            self.push(self.parse_uci(ai_move))
-            print("Moving...", ai_move)
+            # ai_move = evaluate_best_move(self.GetLegalMoves())
+            # self.push(self.parse_uci(ai_move))
+            # print("Moving...", ai_move)
         else:
             print("Invalid Move! ", self.pending_move)
         self.pending_move = []
         self.selected_tile.state = self.selected_tile.NORMAL
-
-def GetEngineMove(moves):
-    rand_move = random.choice(moves)
-    return rand_move
 
 # TODO Pawn promotion

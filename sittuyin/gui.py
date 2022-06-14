@@ -1,4 +1,5 @@
-from utils import COLORS, WINWIDTH, MARGIN, TILESIZE, FPS, PIECES_IMG
+from .utils import COLORS, WINWIDTH, MARGIN, TILESIZE, FPS, PIECES_IMG
+
 import pygame
 import os
 
@@ -16,8 +17,8 @@ class GUI:
         self.board = board
         pygame.display.set_caption("STY")
 
-    def UpdateChessboard(self):
-        self.DrawBaseboard()
+    def update_chessboard(self):
+        self.draw_baseboard()
 
         for tile in self.board.squares:
             piece = self.board.piece_at(tile.square)
@@ -30,9 +31,9 @@ class GUI:
                     tile.state = tile.MOVABLE
                 if tile.name in self.board.TargetedSquares():
                     tile.state = tile.CAPTURABLE
-            self.HighlightTile(tile)
+            self.highlight_tile(tile)
             if piece is not None:
-                self.DrawPiece(piece, tile)
+                self.draw_piece(piece, tile)
             # Draw grid lines
             for i in range(8):
                 pygame.draw.line(self.window, COLORS['d'], (MARGIN, MARGIN + TILESIZE * (i + 1)),
@@ -40,7 +41,7 @@ class GUI:
                 pygame.draw.line(self.window, COLORS['d'], (MARGIN + TILESIZE * (i + 1), MARGIN),
                                  (MARGIN + TILESIZE * (i + 1), MARGIN + self.board.SIZE), 3)
 
-    def DrawBaseboard(self):
+    def draw_baseboard(self):
         pygame.draw.rect(self.window, self.BOARDCOLOR, self.board.rect)
 
         pygame.draw.line(self.window, COLORS['m'], (MARGIN, MARGIN),
@@ -51,7 +52,7 @@ class GUI:
                          3)
         pygame.draw.rect(self.window, COLORS['d'], self.board.rect, 5)
 
-    def HighlightTile(self, tile):
+    def highlight_tile(self, tile):
         color = None
         if tile.state == tile.MOVABLE:
             color = COLORS['m']
@@ -64,15 +65,15 @@ class GUI:
         if color:
             pygame.draw.rect(self.window, color, tile.rect, 3)
 
-    def DrawPiece(self, piece, tile):
+    def draw_piece(self, piece, tile):
         self.window.blit(PIECES_IMG[piece.symbol()], (tile.x, tile.y))
 
-    def WriteText(self, text, fontsize, pos, color=COLORS['w']):
+    def write_text(self, text, fontsize, pos, color=COLORS['w']):
         font = pygame.font.Font(None, fontsize)
         rendered_text = font.render(text, True, color)
         self.window.blit(rendered_text, pos)
 
-    def GetSelectedSquare(self, pos):
+    def get_selected_square(self, pos):
         """
         :param pos: XY position of the mouse click
         :return: User-clicked Tile object
@@ -83,13 +84,13 @@ class GUI:
                 return tile
         return None
 
-    def UpdateDisplay(self):
+    def update_display(self):
         self.window.fill(COLORS['b'])
         if self.board.turn:
-            self.WriteText("White to move...", 50, (100, 30))
+            self.write_text("White to move...", 50, (100, 10))
         else:
-            self.WriteText("Black to move...", 50, (100, 30))
-        self.UpdateChessboard()
+            self.write_text("Black to move...", 50, (100, 10))
+        self.update_chessboard()
 
         pygame.display.update()
         self.clock.tick(FPS)

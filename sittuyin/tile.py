@@ -1,4 +1,4 @@
-from utils import MARGIN, TILESIZE
+from .utils import MARGIN, TILESIZE
 
 import chess
 
